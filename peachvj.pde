@@ -6,10 +6,12 @@ AudioPlayer jingle;
 FFT         fft;
 
 ArrayList<Ball> bs = new ArrayList<Ball>();
+PShader shader;
 
 void setup()
 {
-  size(700, 700);
+  size(800, 800, P2D);
+  shader = loadShader("blur.glsl");
   noFill();
   minim = new Minim(this);
   jingle = minim.loadFile("All_the_spieces_on_the_earth.mp3", 1024);
@@ -22,13 +24,14 @@ void setup()
   center.x = width/2;
   center.y = height/2;
   ellipseMode(CENTER);
+  background(0);
 }
 
 int div = 600;
 PVector center = new PVector(0, 0);
 void draw()
 {
-  background(0);
+  //background(0);
   fft.forward( jingle.mix );  
   for(Ball b : bs){
     b.r = 2;
@@ -41,6 +44,7 @@ void draw()
   for(Ball b : bs){
     b.r = min(b.r, max_thre);
   }
+  filter(shader);
   show();
 }
 
