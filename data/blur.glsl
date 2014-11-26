@@ -7,6 +7,7 @@ precision mediump int;
 
 uniform sampler2D texture;
 uniform vec2 texOffset;
+uniform float div;
 
 varying vec4 vertColor;
 varying vec4 vertTexCoord;
@@ -35,8 +36,8 @@ void main(void) {
   vec4 col7 = texture2D(texture, tc7);
   vec4 col8 = texture2D(texture, tc8);
 
-  vec4 sum = (1.0 * col0 + 2.0 * col1 + 1.0 * col2 +  
-              2.0 * col3 + 4.0 * col4 + 2.0 * col5 +
-              1.0 * col6 + 2.0 * col7 + 1.0 * col8) / 16.0;            
+  vec4 sum = (1.5 * col0 + 2.5 * col1 + 1.5 * col2 +  
+              2.5 * col3 + 4.0 * col4 + 2.5 * col5 +
+              1.5 * col6 + 2.5 * col7 + 1.5 * col8) / div;            
   gl_FragColor = vec4(sum.rgb, 1.0) * vertColor;  
 }

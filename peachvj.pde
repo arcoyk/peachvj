@@ -10,7 +10,7 @@ PShader shader;
 
 void setup()
 {
-  size(800, 800, P2D);
+  size(700, 700, P2D);
   shader = loadShader("blur.glsl");
   noFill();
   minim = new Minim(this);
@@ -44,8 +44,15 @@ void draw()
   for(Ball b : bs){
     b.r = min(b.r, max_thre);
   }
+  change_mode();
   filter(shader);
   show();
+}
+
+void change_mode(){
+  if (random(100) < 5) {
+    shader.set("div", random(15, 30));
+  }
 }
 
 float max_thre = 20;
