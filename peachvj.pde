@@ -5,13 +5,32 @@ Minim       minim;
 AudioPlayer jingle;
 FFT         fft;
 
+float max_thre = 20;
+int shape_mode = 0;
+float color_mode = -1;
+int back_mode = -1;
+
+int div = 600;
+PVector center = new PVector(0, 0);
+
 ArrayList<Ball> bs = new ArrayList<Ball>();
 PShader shader;
+
+class Ball {
+  Ball(){
+  }
+  PVector p = new PVector(random(width / 2 - 100, width / 2 + 100),
+                          random(height / 2 - 100, height / 2 + 100));
+  PVector v = new PVector(random(-3, 3), random(-3, 3));
+  float r = 20;
+  color c = color(255);
+}
 
 void setup()
 {
   size(700, 700, P2D);
   shader = loadShader("blur.glsl");
+  shader.set("div", 19.0);
   noFill();
   minim = new Minim(this);
   jingle = minim.loadFile("All_the_spieces_on_the_earth.mp3", 1024);
@@ -27,35 +46,28 @@ void setup()
   background(0);
 }
 
-int div = 600;
-PVector center = new PVector(0, 0);
 void draw()
 {
-  //background(0);
+  if (back_mode != -1) {
+    background(back_mode);
+  }
+  back_mode = -1;
   fft.forward( jingle.mix );  
-  for(Ball b : bs){
+  int interval = (int)(fft.specSize() / div) + 1;
+  for (Ball b : bs) {
     b.r = 2;
   }
-  int interval = (int)(fft.specSize() / div) + 1;
-  for(int i=0; i<fft.specSize(); i++){
-    Ball b = bs.get((int)(i/interval));
+  for (int i = 0; i < fft.specSize(); i++) {
+    Ball b = bs.get((int)(i / interval));
     b.r += pow(fft.getBand(i),2);
   }
-  for(Ball b : bs){
+  for (Ball b : bs) {
     b.r = min(b.r, max_thre);
   }
-  change_mode();
   filter(shader);
   show();
 }
 
-void change_mode(){
-  if (random(100) < 5) {
-    shader.set("div", random(15, 30));
-  }
-}
-
-float max_thre = 20;
 void show(){
   for(Ball b : bs){
     if(b.r <= max_thre * 0.2){
@@ -81,20 +93,59 @@ void show(){
       b1.v.x *= -1;
       b1.v.y *= -1;
     }
-    b1.c = color(map(b1.r, 0, max_thre, 0, 255),
-                 map(b1.r*b1.r, 0, max_thre, 0, 255),
-                 map(b1.r, 0, max_thre, 0, 25));
+    b1.c = basic_color(b1);
     stroke(b1.c);
-    ellipse(b1.p.x, b1.p.y, b1.r, b1.r);
+    draw_shape(b1);
   }
 }
 
-class Ball {
-  Ball(){
+void draw_shape(Ball b) {
+  if (shape_mode == 0) {
+    ellipse(b.p.x, b.p.y, b.r, b.r);
+  } else if (shape_mode == 1) {
+    float theta = random(2 * PI);
+    line(b.p.x, b.p.y, b.p.x + b.r * cos(theta), b.p.y + b.r * sin(theta));
+  } else if (shape_mode == 2) {
+    rect(b.p.x, b.p.y, b.r, b.r);
   }
-  PVector p = new PVector(random(width/2 - 100, width/2 + 100),
-                          random(height/2 - 100, height/2 + 100));
-  PVector v = new PVector(random(-3, 3), random(-3, 3));
-  float r = 20;
-  color c = color(255);
+}
+
+color basic_color(Ball b1) {
+  if (color_mode == -1) {
+    return color(b1.r, 255, 0);
+  } else if (color_mode == -2) {
+    return color(0, 255, 200 + b1.r);
+  } else {
+    return (int)color_mode;
+  }
+}
+
+void keyPressed() {
+  if (key == 'q') {
+    shader.set("div", 30.0);
+  }else if (key == 'w') {
+    shader.set("div", 19.0);
+  }else if (key == 'a') {
+    color_mode = -2;
+  }else if (key == 's') {
+    color_mode = -1;
+  }else if (key == 'd') {
+    color_mode = color((int)random(200, 255),
+                       (int)random(200, 255),
+                       (int)random(200, 255));
+  }else if (key == 'z') {
+    shape_mode = 0;
+  }else if (key == 'x') {
+    shape_mode = 1;
+  }else if (key == 'c') {
+    shape_mode = 2;
+  }else if (key == 'p') {
+    back_mode = color(255, 10, 0);
+  }else if (key == 'o') {
+    back_mode = color(0, 255, 10);
+  }else if (key == 'i') {
+    back_mode = color(0, 100, 255);
+  }else if (key == 'u') {
+    back_mode = (int)random(255 * 255 * 255);
+  }
 }
