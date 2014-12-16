@@ -14,6 +14,7 @@ int div = 600;
 PVector center = new PVector(0, 0);
 
 ArrayList<Ball> bs = new ArrayList<Ball>();
+ArrayList<PImage> imgs = new ArrayList<PImage>();
 PShader shader;
 
 class Ball {
@@ -44,7 +45,12 @@ void setup()
   center.y = height/2;
   ellipseMode(CENTER);
   background(0);
+  for (int i = 0; i < 5; i++) {
+    PImage img = loadImage("img/" + i + ".jpg");
+    imgs.add(img);
+  }
 }
+
 
 void draw()
 {
@@ -122,7 +128,7 @@ color basic_color(Ball b1) {
 
 void keyPressed() {
   if (key == 'q') {
-    shader.set("div", 30.0);
+    shader.set("div", 20.0);
   }else if (key == 'w') {
     shader.set("div", 19.0);
   }else if (key == 'a') {
@@ -147,5 +153,20 @@ void keyPressed() {
     back_mode = color(0, 100, 255);
   }else if (key == 'u') {
     back_mode = (int)random(255 * 255 * 255);
+  }else if (key == 'l') {
+    PImage img = imgs.get(1);
+    image(img, (width - img.width) / 2, (height - img.height) / 2);
+  }else if (key == 'k') {
+    PImage img = imgs.get(2);
+    image(img, (width - img.width) / 2, (height - img.height) / 2);
+  }else if (key == 'j') {
+    PImage img = imgs.get(3);
+    image(img, (width - img.width) / 2, (height - img.height) / 2);
+  }else if (key == 'h') {
+    PImage img = imgs.get(4);
+    image(img, (width - img.width) / 2, (height - img.height) / 2);
+  }else if (key == 'g') {
+    PImage img = imgs.get(0);
+    image(img, (width - img.width) / 2, (height - img.height) / 2);
   }
 }
